@@ -3,8 +3,10 @@ import requests
 import pandas as pd
 from io import BytesIO
 
+import os
+
 # Configuration
-API_URL = "http://localhost:8000"
+API_URL = os.getenv("BACKEND_URL", "http://backend:8000")
 
 st.set_page_config(
     page_title="FacePulse - Attendance System",
@@ -79,7 +81,7 @@ def main():
                         st.error("Please provide both Name and ID.")
                     else:
                         files = {"file": (image_file.name, image_file.getvalue())}
-                        data = {"user_id": user_id, "name": user_name}
+                        data = {"user_id": user_id, "user_name": user_name}
                         
                         with st.spinner("Processing..."):
                             try:
@@ -87,7 +89,10 @@ def main():
                                 if response.status_code == 200:
                                     st.success(response.json()["message"])
                                 else:
-                                    st.error(f"Error: {response.json().get('detail', 'Unknown error')}")
+                                    error_detail = response.json().get('detail', 'Unknown error')
+                                    st.error(f"Error ({response.status_code}): {error_detail}")
+                                    if response.status_code == 422:
+                                        st.json(response.json())
                             except Exception as e:
                                 st.error(f"Could not connect to backend: {e}")
             else:

@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+env/
+venv/
+ENV/
+venv.bak/
+.git/
+.gitignore
+data/chromadb/
+data/attendance.csv
+*.log

@@ -1,7 +1,9 @@
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 from typing import List
 import uvicorn
+import traceback
 
 from backend.face_engine import extract_face_encodings
 from backend.db import register_user_in_db, search_user_by_face, mark_attendance, get_attendance_records
@@ -10,6 +12,14 @@ from backend.logger import setup_logger
 logger = setup_logger("backend.main")
 
 app = FastAPI(title="Face Attendance System API")
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+    logger.error(f"Validation error: {exc.errors()}")
+    return JSONResponse(
+        status_code=422,
+        content={"detail": exc.errors(), "body": exc.body},
+    )
 
 @app.post("/register")
 async def register(
@@ -77,6 +87,8 @@ async def recognize_and_mark(file: UploadFile = File(...)):
         return {"results": results}
     
     except Exception as e:
+        logger.error(f"Error in recognize_and_mark: {str(e)}")
+        logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/attendance")

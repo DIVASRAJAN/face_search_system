@@ -40,3 +40,26 @@ The UI will be available at `http://localhost:8501`.
 - `backend/`: FastAPI server, face engine, and database logic.
 - `frontend/`: Streamlit web application.
 - `data/`: Storage for face vectors (ChromaDB) and attendance CSV logs.
+
+## Docker Support
+
+You can run the entire system using Docker and Docker Compose. This ensures all dependencies (like `dlib` and `cmake`) are correctly installed within a containerized environment.
+
+### Prerequisites
+- Docker
+- Docker Compose
+
+### Run with Docker Compose
+
+1. **Build and start the containers:**
+   ```bash
+   docker-compose up --build
+   ```
+
+2. **Access the applications:**
+   - **Frontend (UI):** [http://localhost:8501](http://localhost:8501)
+   - **Backend (API):** [http://localhost:8000](http://localhost:8000)
+
+### Persistence
+The system uses a Docker volume mapping for the `./data` directory. Your face registrations and attendance records will persist even if you stop or delete the containers.
+
